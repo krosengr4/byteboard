@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "@/lib/api";
 
 interface User {
   id: number;
@@ -38,20 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || "Login failed");
-      }
-
-      const data = await response.json();
+      const { data } = await api.post("login", { username, password });
 
       // Store token in localStorage
       localStorage.setItem("token", data.token);
@@ -76,25 +64,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     lastName: string
   ) => {
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-          first_name: firstName,
-          last_name: lastName,
-        }),
+      const { data } = await api.post("/register", {
+        username,
+        password,
+        first_name: firstName,
+        last_name: lastName,
       });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || "Registration failed");
-      }
-
-      const data = await response.json();
 
       // Store token in localStorage
       localStorage.setItem("token", data.token);
