@@ -25,16 +25,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for existing token on mount
+  // Check for existing token on mount and restore session
+  // TODO: Change to HTTP-only Cookie instead of localStorage
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // TODO: Validate token and fetch user info
-      // For now, we'll just set loading to false
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    const restoreSession = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data } = await api.get("/auth/me");
+        setUser({
+          id: data.user.user_id,
+          username: data.user.username,
+          role: data.user.role,
+          firstName: data.user.first_name,
+        });
+      } catch (error: unknown) {
+        localStorage.removeItem("token");
+
+        // Only log unexpected errors (401 is expected for expired tokens)
+        if (error instanceof Error && 'response' in error) {
+          const axiosError = error as { response?: { status?: number } };
+          if (axiosError.response?.status !== 401) {
+            console.error("Session restoration failed:", error);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
   const login = async (username: string, password: string) => {
