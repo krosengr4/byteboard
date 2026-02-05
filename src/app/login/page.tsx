@@ -1,16 +1,18 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Button, Card, Typography, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Card, Typography, message, Switch } from "antd";
+import { UserOutlined, LockOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
 const { Title, Text } = Typography;
 
 export default function Login() {
   const { login, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +36,15 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className={`flex min-h-screen items-center justify-center ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"} relative`}>
+      <div className="absolute top-4 right-4">
+        <Switch
+          checked={theme === "dark"}
+          onChange={toggleTheme}
+          checkedChildren={<SunOutlined />}
+          unCheckedChildren={<MoonOutlined />}
+        />
+      </div>
       <Card className="w-full max-w-md">
         <div className="text-center mb-8">
           <Title level={2}>ByteBoard</Title>
