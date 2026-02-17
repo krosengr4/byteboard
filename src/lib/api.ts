@@ -66,8 +66,8 @@ export const getProfile = (userId: number) => api.get(`/profiles/${userId}`);
 export const updateProfile = (
   userId: number,
   data: {
-    firstname: string;
-    lastname: string;
+    first_name: string;
+    last_name: string;
     email: string;
     github_link: string;
     city: string;
@@ -77,3 +77,7 @@ export const updateProfile = (
 
 // Admin
 export const getAllUsers = () => api.get("/admin/users");
+
+// User posts
+export const getPostsByUser = (userId: number) =>
+  api.get(`/posts/user/${userId}`)
