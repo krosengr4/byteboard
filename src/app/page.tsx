@@ -5,8 +5,9 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Typography, Spin, Switch } from "antd";
-import { MoonOutlined, SunOutlined, UserOutlined } from "@ant-design/icons";
+import { MoonOutlined, SunOutlined, UserOutlined, PlusOutlined } from "@ant-design/icons";
 import { getPosts } from "@/lib/api";
+import CreatePostModal from "@/components/CreatePostModal";
 
 const { Title, Text } = Typography;
 
@@ -16,6 +17,7 @@ export default function Home() {
   const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -79,8 +81,15 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Title level={3}>Posts Feed</Title>
+        <div className="mb-6 flex justify-between items-center">
+          <Title level={3} className="!mb-0">Posts Feed</Title>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setIsCreatePostOpen(true)}
+          >
+            Create Post
+          </Button>
         </div>
 
         {posts.length === 0 ? (
@@ -107,6 +116,11 @@ export default function Home() {
           </div>
         )}
       </main>
+      <CreatePostModal
+        open={isCreatePostOpen}
+        onClose={() => setIsCreatePostOpen(false)}
+        onPostCreated={(post) => setPosts((prev) => [post, ...prev])}
+      />
     </div>
   );
 }

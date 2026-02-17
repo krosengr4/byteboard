@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button, Card, Typography, Spin, Input, Popconfirm, message } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { getPost, getComments, createComment, updateComment, deleteComment } from "@/lib/api";
+import { getPost, getComments, createComment, updateComment, deleteComment, updatePost, deletePost } from "@/lib/api";
 
 const { Title, Text } = Typography;
 
@@ -42,6 +42,9 @@ export default function PostDetail() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editPostTitle, setEditPostTitle] = useState("");
+  const [editPostContent, setEditPostContent] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -70,6 +73,38 @@ export default function PostDetail() {
 
     fetchData();
   }, [user, postId]);
+
+  const handlePostEditStart = () => {
+    setEditPostTitle(post!.title);
+    setEditPostContent(post!.content);
+    setIsEditingPost(true);
+  };
+
+  const handlePostEditSave = async () => {
+    if (!editPostTitle.trim() || !editPostContent.trim()) return;
+    try {
+      await updatePost(postId, editPostTitle.trim(), editPostContent.trim());
+      setPost((prev) => prev ? { ...prev, title: editPostTitle.trim(), content: editPostContent.trim() } : prev);
+      setIsEditingPost(false);
+      message.success("Post updated!");
+    } catch {
+      message.error("Failed to update post");
+    }
+  };
+
+  const handlePostEditCancel = () => {
+    setIsEditingPost(false);
+  };
+
+  const handlePostDelete = async () => {
+    try {
+      await deletePost(postId);
+      message.success("Post deleted");
+      router.push("/");
+    } catch {
+      message.error("Failed to delete post");
+    }
+  };
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
@@ -146,11 +181,51 @@ export default function PostDetail() {
 
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         <Card>
-          <Title level={3}>{post.title}</Title>
-          <Text className="text-gray-500">
-            by {post.author} · {new Date(post.date_posted).toLocaleDateString()}
-          </Text>
-          <p className="mt-4 whitespace-pre-wrap">{post.content}</p>
+          {isEditingPost ? (
+            <div className="space-y-3">
+              <Input
+                value={editPostTitle}
+                onChange={(e) => setEditPostTitle(e.target.value)}
+                size="large"
+                placeholder="Post title"
+              />
+              <Input.TextArea
+                value={editPostContent}
+                onChange={(e) => setEditPostContent(e.target.value)}
+                autoSize={{ minRows: 4 }}
+                placeholder="Post content"
+              />
+              <div className="flex gap-2">
+                <Button type="primary" onClick={handlePostEditSave}>Save</Button>
+                <Button onClick={handlePostEditCancel}>Cancel</Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between items-start gap-2">
+                <Title level={3} className="!mb-0">{post.title}</Title>
+                {user.id === post.user_id && (
+                  <div className="flex gap-1 shrink-0">
+                    <Button icon={<EditOutlined />} size="small" onClick={handlePostEditStart} />
+                    <Popconfirm
+                      title="Delete post?"
+                      description="This cannot be undone."
+                      onConfirm={handlePostDelete}
+                      okText="Delete"
+                      cancelText="Cancel"
+                      okButtonProps={{ danger: true }}
+                    >
+                      <Button icon={<DeleteOutlined />} size="small" danger />
+                    </Popconfirm>
+                  </div>
+                )}
+              </div>
+              <Text className="text-gray-500">
+                by {post.author} · {new Date(post.date_posted).toLocaleDateString()}
+              </Text>
+              <p className="mt-4 whitespace-pre-wrap">{post.content}</p>
+            </>
+          )}
         </Card>
 
         <div>
