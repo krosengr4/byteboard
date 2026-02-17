@@ -7,6 +7,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button, Card, Typography, Spin, Input, Popconfirm, message } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { getPost, getComments, createComment, updateComment, deleteComment, updatePost, deletePost } from "@/lib/api";
+import UserProfileModal from "@/components/UserProfileModal";
 
 const { Title, Text } = Typography;
 
@@ -45,6 +46,7 @@ export default function PostDetail() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostTitle, setEditPostTitle] = useState("");
   const [editPostContent, setEditPostContent] = useState("");
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -221,7 +223,18 @@ export default function PostDetail() {
                 )}
               </div>
               <Text className="text-gray-500">
-                by {post.author} · {new Date(post.date_posted).toLocaleDateString()}
+                by{" "}
+                {user.id !== post.user_id ? (
+                  <span
+                    className="cursor-pointer hover:underline hover:text-blue-500"
+                    onClick={() => setProfileModalOpen(true)}
+                  >
+                    {post.author}
+                  </span>
+                ) : (
+                  post.author
+                )}
+                {" "}· {new Date(post.date_posted).toLocaleDateString()}
               </Text>
               <p className="mt-4 whitespace-pre-wrap">{post.content}</p>
             </>
@@ -316,6 +329,13 @@ export default function PostDetail() {
           </Button>
         </Card>
       </main>
+
+      <UserProfileModal
+        open={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        userId={post.user_id}
+        username={post.author}
+      />
     </div>
   );
 }
