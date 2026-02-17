@@ -4,8 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Typography, Spin, Switch } from "antd";
-import { MoonOutlined, SunOutlined, UserOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Typography, Spin } from "antd";
+import { UserOutlined, PlusOutlined } from "@ant-design/icons";
 import { getPosts } from "@/lib/api";
 import CreatePostModal from "@/components/CreatePostModal";
 
@@ -13,7 +13,7 @@ const { Title, Text } = Typography;
 
 export default function Home() {
   const { user, loading: authLoading, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,12 +63,6 @@ export default function Home() {
           </Title>
           <div className="flex gap-4 items-center">
             <Text>Welcome, {user.username}!</Text>
-            <Switch
-              checked={theme === "dark"}
-              onChange={toggleTheme}
-              checkedChildren={<SunOutlined />}
-              unCheckedChildren={<MoonOutlined />}
-            />
             <Button
               icon={<UserOutlined />}
               onClick={() => router.push(`/profile/${user.id}`)}
