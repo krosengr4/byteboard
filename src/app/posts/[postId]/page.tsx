@@ -46,7 +46,7 @@ export default function PostDetail() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostTitle, setEditPostTitle] = useState("");
   const [editPostContent, setEditPostContent] = useState("");
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileModal, setProfileModal] = useState<{ userId: number; username: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -227,7 +227,7 @@ export default function PostDetail() {
                 {user.id !== post.user_id ? (
                   <span
                     className="cursor-pointer hover:underline hover:text-blue-500"
-                    onClick={() => setProfileModalOpen(true)}
+                    onClick={() => setProfileModal({ userId: post.user_id, username: post.author })}
                   >
                     {post.author}
                   </span>
@@ -254,7 +254,17 @@ export default function PostDetail() {
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Text strong>{comment.author}</Text>
+                        {user.id !== comment.user_id ? (
+                          <Text
+                            strong
+                            className="cursor-pointer hover:underline hover:text-blue-500"
+                            onClick={() => setProfileModal({ userId: comment.user_id, username: comment.author })}
+                          >
+                            {comment.author}
+                          </Text>
+                        ) : (
+                          <Text strong>{comment.author}</Text>
+                        )}
                         <Text className="text-gray-400 text-xs">
                           {new Date(comment.date_posted).toLocaleDateString()}
                         </Text>
@@ -331,10 +341,10 @@ export default function PostDetail() {
       </main>
 
       <UserProfileModal
-        open={profileModalOpen}
-        onClose={() => setProfileModalOpen(false)}
-        userId={post.user_id}
-        username={post.author}
+        open={!!profileModal}
+        onClose={() => setProfileModal(null)}
+        userId={profileModal?.userId ?? 0}
+        username={profileModal?.username ?? ""}
       />
     </div>
   );
