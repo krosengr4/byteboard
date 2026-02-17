@@ -90,7 +90,12 @@ export default function Home() {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <Card key={post.post_id} hoverable>
+              <Card
+                key={post.post_id}
+                hoverable
+                onClick={() => router.push(`/posts/${post.post_id}`)}
+                className="cursor-pointer"
+              >
                 <Title level={4}>{post.title}</Title>
                 <Text className="text-gray-600">by {post.author}</Text>
                 <p className="mt-2">{post.content}</p>
