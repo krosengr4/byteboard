@@ -29,7 +29,7 @@ export default function Home() {
     const fetchPosts = async () => {
       try {
         const response = await getPosts();
-        setPosts(response.data);
+        setPosts(response.data || []);
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {
