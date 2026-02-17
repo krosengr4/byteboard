@@ -1,45 +1,19 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from "react";
 import { ConfigProvider, theme } from "antd";
 
-type Theme = "light" | "dark";
-
 interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
+  theme: "dark";
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("byteboard-theme") as Theme;
-    if (savedTheme) {
-      setCurrentTheme(savedTheme);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = currentTheme === "light" ? "dark" : "light";
-    setCurrentTheme(newTheme);
-    localStorage.setItem("byteboard-theme", newTheme);
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
-      <ConfigProvider
-        theme={{
-          algorithm: currentTheme === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        }}
-      >
-        <div className={currentTheme === "dark" ? "dark" : ""}>
-          {children}
-        </div>
+    <ThemeContext.Provider value={{ theme: "dark" }}>
+      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+        <div className="dark">{children}</div>
       </ConfigProvider>
     </ThemeContext.Provider>
   );
