@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Typography, Spin, Switch } from "antd";
-import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { MoonOutlined, SunOutlined, UserOutlined } from "@ant-design/icons";
 import { getPosts } from "@/lib/api";
 
 const { Title, Text } = Typography;
@@ -60,13 +60,19 @@ export default function Home() {
             ByteBoard
           </Title>
           <div className="flex gap-4 items-center">
-            <Text>Welcome, {user.firstName}!</Text>
+            <Text>Welcome, {user.username}!</Text>
             <Switch
               checked={theme === "dark"}
               onChange={toggleTheme}
               checkedChildren={<SunOutlined />}
               unCheckedChildren={<MoonOutlined />}
             />
+            <Button
+              icon={<UserOutlined />}
+              onClick={() => router.push(`/profile/${user.id}`)}
+            >
+              My Profile
+            </Button>
             <Button onClick={logout}>Logout</Button>
           </div>
         </div>
