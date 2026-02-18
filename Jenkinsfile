@@ -45,7 +45,7 @@
       post {
           success {
               echo "Build successful! Image: ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-              build job: 'deploy', wait: false
+              build job: 'RosenPi/Byteboard/deploy', wait: false
           }
           failure {
               echo 'Build failed!'
