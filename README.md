@@ -6,6 +6,7 @@ A social media platform for developers built with Next.js 16 and React 19.
 
 ## Table of Contents
 
+- [Video Demo](#video-demo)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -14,6 +15,9 @@ A social media platform for developers built with Next.js 16 and React 19.
 - [Contributing](#contributing)
 - [License](#license)
 - [Questions](#questions)
+
+## Video Demo
+[Click to Watch a Demo Video](https://github.com/krosengr4/byte-board/blob/main/assets/demo.mp4)
 
 ## Installation
 
